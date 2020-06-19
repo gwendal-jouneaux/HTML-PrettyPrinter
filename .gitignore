@@ -1,0 +1,15 @@
+HTMLPrettyPrinter/target/*
+HTMLPrettyPrinter/.settings/*
+HTMLPrettyPrinter/.classpath
+HTMLPrettyPrinter/.project
+HTMLPrettyPrinter-Launcher/target/*
+HTMLPrettyPrinter-Launcher/.settings/*
+HTMLPrettyPrinter-Launcher/.classpath
+HTMLPrettyPrinter-Launcher/.project
+.settings/*
+.classpath
+.project
+native/.settings/*
+native/.project
+component/.settings/*
+component/.project

@@ -1,0 +1,2 @@
+#!/bin/bash
+java -Dtruffle.class.path.append=./HTMLPrettyPrinter/target/html.jar -Dtruffle.class.path.append=../simpletool/target/simpletool-20.0.0.jar -cp HTMLPrettyPrinter-Launcher/target/HTML-launcher.jar fr.gjouneau.truffle.HTML.launcher.HTML_Launcher $1
