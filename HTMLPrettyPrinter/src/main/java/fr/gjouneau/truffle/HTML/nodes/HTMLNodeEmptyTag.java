@@ -16,6 +16,10 @@ public class HTMLNodeEmptyTag extends HTMLNodeBaseTag {
 		super(tag, attributes,sourceStart, sourceEnd);
 	}
 	
+	public HTMLNodeEmptyTag(String tag, List<HTMLNodeAttribute> attributes, int sourceStart, int sourceEnd) {
+		super(tag, attributes,sourceStart, sourceEnd);
+	}
+	
 	public boolean hasTag(Class<? extends Tag> tag) {
 		if(tag == HTMLInstrumentationTags.VoidElement.class) return true;
 		if(tag == this.tag) return true;
@@ -24,7 +28,7 @@ public class HTMLNodeEmptyTag extends HTMLNodeBaseTag {
 
 	@Override
 	public String execute(VirtualFrame frame) {
-		String out = "<"+tag.getSimpleName().toLowerCase();
+		String out = "<"+stringTag;
 		for (int i = 0; i < attributes.length; i++) {
 			out += " "+attributes[i].execute(frame);
 		}

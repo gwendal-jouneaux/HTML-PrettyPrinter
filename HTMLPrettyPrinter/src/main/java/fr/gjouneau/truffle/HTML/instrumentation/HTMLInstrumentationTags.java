@@ -144,6 +144,12 @@ public class HTMLInstrumentationTags {
             WBR.class
 	};
 	
+	@Tag.Identifier("Unknown")
+	public static final class Unknown extends Tag {
+		private Unknown() {
+		}
+	}
+	
 	@Tag.Identifier("Attribute")
 	public static final class Attribute extends Tag {
 		private Attribute() {

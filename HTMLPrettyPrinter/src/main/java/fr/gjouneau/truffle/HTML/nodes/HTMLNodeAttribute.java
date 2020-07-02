@@ -35,10 +35,6 @@ public class HTMLNodeAttribute extends HTMLNodeBase {
 		this.value = value;
 		this.type = type;
 	}
-
-	public boolean isInstrumentable() {
-		return true;
-	}	
 	
 	public boolean hasTag(Class<? extends Tag> tag) {
 		if(tag == HTMLInstrumentationTags.Attribute.class) return true;

@@ -67,10 +67,20 @@ public class HTMLParser {
 		}
 		Class<? extends Tag> tag = mapping.get(stringTag.toUpperCase());
 		
-		if (Arrays.asList(HTMLInstrumentationTags.VOID_ELEMENT).contains(tag)) {
-			return parseEmpty(sourceSectionStart, endIndex, tag);
+		if (tag == null) {
+			tag = HTMLInstrumentationTags.Unknown.class;
+			
+			if (content.contains("</"+stringTag)) {
+				return parseBlock(sourceSectionStart, endIndex, stringTag);
+			} else {
+				return parseEmpty(sourceSectionStart, endIndex, stringTag);
+			}
 		} else {
-			return parseBlock(sourceSectionStart, endIndex, tag);
+			if (Arrays.asList(HTMLInstrumentationTags.VOID_ELEMENT).contains(tag)) {
+				return parseEmpty(sourceSectionStart, endIndex, tag);
+			} else {
+				return parseBlock(sourceSectionStart, endIndex, tag);
+			}
 		}
 	}
 	
@@ -97,6 +107,29 @@ public class HTMLParser {
 		return new HTMLNodeBlockTag(tag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
 	}
 	
+	private HTMLNodeBlockTag parseBlock(int startindex, int endIndex, String stringTag) {
+		int tagEnd = findIndexOf('>',index,endIndex);
+		HTMLNodeAttribute attr;
+		List<HTMLNodeAttribute> attributes = new ArrayList<HTMLNodeAttribute>();
+		while((attr = parseAttribute(tagEnd)) != null) {
+			attributes.add(attr);
+		}
+		int blockEnd = findEndTagIndex(stringTag, index, endIndex);
+		List<HTMLNodeBase> children = new ArrayList<HTMLNodeBase>();
+		while(index < endIndex) {
+			HTMLNodeBase elem = parseNext(blockEnd);
+			if(elem != null) {
+				children.add(elem);
+			} else {
+				break;
+			}
+		}
+		if(index < endIndex) {
+			index = Math.min(endIndex, index + stringTag.length()+3);
+		}
+		return new HTMLNodeBlockTag(stringTag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
+	}
+	
 	private HTMLNodeEmptyTag parseEmpty(int startindex, int endIndex, Class<? extends Tag> tag) {
 		int tagEnd = findIndexOf('>',index,endIndex);
 		int padding = (content.charAt(tagEnd-1)=='/')?1:0;
@@ -107,6 +140,18 @@ public class HTMLParser {
 		}
 		index += padding;
 		return new HTMLNodeEmptyTag(tag, attributes, startindex, tagEnd+padding);
+	}
+	
+	private HTMLNodeEmptyTag parseEmpty(int startindex, int endIndex, String stringTag) {
+		int tagEnd = findIndexOf('>',index,endIndex);
+		int padding = (content.charAt(tagEnd-1)=='/')?1:0;
+		HTMLNodeAttribute attr;
+		List<HTMLNodeAttribute> attributes = new ArrayList<HTMLNodeAttribute>();
+		while((attr = parseAttribute(tagEnd-padding)) != null) {
+			attributes.add(attr);
+		}
+		index += padding;
+		return new HTMLNodeEmptyTag(stringTag, attributes, startindex, tagEnd+padding);
 	}
 	
 	private HTMLNodePlainText parseText(int endIndex) {
@@ -183,6 +228,33 @@ public class HTMLParser {
 			}
 			Class<? extends Tag> actualTag = mapping.get(stringTag.toUpperCase());
 			if(actualTag == tag) {
+				count += sign;
+			}
+			if(count <= 0) {
+				return startIndex - stringTag.length() -2;
+			}
+			startIndex = content.indexOf('<', startIndex)+1;
+		}
+		
+		return endIndex;
+	}
+	
+	private int findEndTagIndex(String tag, int startIndex, int endIndex) {
+		int count = 1;
+		startIndex = content.indexOf('<', startIndex)+1;
+		while(startIndex < endIndex) {
+			int sign = 1;
+			if(content.charAt(startIndex)=='/') {
+				sign = -1;
+				startIndex++;
+			}
+			String stringTag = "";
+			while(!WS.contains(content.charAt(startIndex)) && content.charAt(startIndex) != '>') {
+				stringTag += content.charAt(startIndex);
+				startIndex++;
+			}
+
+			if(stringTag.toLowerCase() == tag.toLowerCase()) {
 				count += sign;
 			}
 			if(count <= 0) {
