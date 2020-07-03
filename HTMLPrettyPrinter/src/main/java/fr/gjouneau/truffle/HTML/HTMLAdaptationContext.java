@@ -12,9 +12,7 @@ public class HTMLAdaptationContext extends AdaptationContext<HTMLLanguage> {
 	public Map<String, Double> loadUserConfig() {
 		Map<String, Double> out = new HashMap<String, Double>();
 		out.put("Energy", Double.parseDouble(System.getenv("ADAPTABLE_HTML_ENERGY")) / 100.0);
-		System.err.println("\tENERGY = " + out.get("Energy"));
 		out.put("Accuracy", Double.parseDouble(System.getenv("ADAPTABLE_HTML_ACCURACY")) / 100.0);
-		System.err.println("\tACCURACY = " + out.get("Accuracy"));
 		return out;
 	}
 
