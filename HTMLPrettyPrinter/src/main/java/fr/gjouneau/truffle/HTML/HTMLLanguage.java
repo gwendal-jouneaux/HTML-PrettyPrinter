@@ -1,5 +1,7 @@
 package fr.gjouneau.truffle.HTML;
 
+import com.oracle.truffle.adaptable.language.AdaptationContext;
+import com.oracle.truffle.adaptable.language.TruffleAdaptableLanguage;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -128,10 +130,15 @@ import fr.gjouneau.truffle.HTML.runtime.HTMLContext;
 	BlockElement.class,
 	VoidElement.class,
 	Attribute.class})
-public class HTMLLanguage extends TruffleLanguage<HTMLContext> {
+public class HTMLLanguage extends TruffleAdaptableLanguage<HTMLContext> {
 	
 	public static final String ID = "HTML";
     public static final String MIME_TYPE = "text/html";
+    
+    public static AdaptationContext getAdaptationContext() {
+    	System.err.println("THE CONTEXT WORKS");
+		return new HTMLAdaptationContext();
+	}
 
 	@Override
 	protected HTMLContext createContext(Env env) {
