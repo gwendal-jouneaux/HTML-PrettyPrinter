@@ -1,6 +1,6 @@
 package fr.gjouneau.truffle.HTML;
 
-import com.oracle.truffle.adaptable.language.AdaptationContext;
+import com.oracle.truffle.adaptable.language.FeedbackLoop;
 import com.oracle.truffle.adaptable.language.TruffleAdaptableLanguage;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
@@ -13,7 +13,6 @@ import com.oracle.truffle.api.source.SourceSection;
 import fr.gjouneau.truffle.HTML.instrumentation.HTMLInstrumentationTags.*;
 import fr.gjouneau.truffle.HTML.nodes.HTMLNodeRoot;
 import fr.gjouneau.truffle.HTML.parser.HTMLParser;
-import fr.gjouneau.truffle.HTML.runtime.HTMLContext;
 
 @TruffleLanguage.Registration(id = HTMLLanguage.ID, name = "HTML", defaultMimeType = HTMLLanguage.MIME_TYPE, characterMimeTypes = HTMLLanguage.MIME_TYPE, contextPolicy = ContextPolicy.SHARED, fileTypeDetectors = HTMLFileDetector.class)
 @ProvidedTags({A.class,
@@ -130,19 +129,24 @@ import fr.gjouneau.truffle.HTML.runtime.HTMLContext;
 	BlockElement.class,
 	VoidElement.class,
 	Attribute.class})
-public class HTMLLanguage extends TruffleAdaptableLanguage<HTMLContext> {
+public class HTMLLanguage extends TruffleAdaptableLanguage<HTMLAdaptationContext> {
 	
 	public static final String ID = "HTML";
     public static final String MIME_TYPE = "text/html";
     
-    public static AdaptationContext getAdaptationContext() {
-    	System.err.println("THE CONTEXT WORKS");
+	@Override
+	protected HTMLAdaptationContext createAdaptationContext() {
 		return new HTMLAdaptationContext();
 	}
 
 	@Override
-	protected HTMLContext createContext(Env env) {
-		return new HTMLContext();
+	protected FeedbackLoop<?> createFeedbackLoop(HTMLAdaptationContext ctx) {
+		return new HTMLFeedbackLoop();
+	}
+	
+	@Override
+	protected Class<? extends FeedbackLoop> getFeedbackLoopType() {
+		return HTMLFeedbackLoop.class;
 	}
 
 	@Override
@@ -151,7 +155,7 @@ public class HTMLLanguage extends TruffleAdaptableLanguage<HTMLContext> {
 	}
 	
 	@Override
-    protected String toString(HTMLContext context, Object value) {
+    protected String toString(HTMLAdaptationContext context, Object value) {
         return value.toString();
     }
 

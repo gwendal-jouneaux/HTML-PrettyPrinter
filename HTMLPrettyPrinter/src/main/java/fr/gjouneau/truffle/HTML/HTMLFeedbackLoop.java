@@ -8,7 +8,7 @@ import com.oracle.truffle.api.nodes.Node;
 import fr.gjouneau.truffle.HTML.instrumentation.HTMLInstrumentationTags;
 
 @Registration(id = HTMLFeedbackLoop.ID, name = "FeedbackLoop", version = "20.0.0", services = HTMLFeedbackLoop.class)
-public class HTMLFeedbackLoop extends FeedbackLoop<HTMLLanguage, HTMLAdaptationContext> {
+public class HTMLFeedbackLoop extends FeedbackLoop {
 
 	@Override
 	protected Class<? extends Tag> getFeedbackLoopTrigger() {
@@ -17,13 +17,6 @@ public class HTMLFeedbackLoop extends FeedbackLoop<HTMLLanguage, HTMLAdaptationC
 
 	@Override
 	protected boolean additionalFilter(Node trigger) {
-		System.err.println("THE LOOP WORKS");
 		return true;
 	}
-	
-	//@Override
-    //protected final OptionDescriptors getOptionDescriptors() {
-    //    return new HTMLFeedbackLoopOptionDescriptors();
-    //}
-
 }

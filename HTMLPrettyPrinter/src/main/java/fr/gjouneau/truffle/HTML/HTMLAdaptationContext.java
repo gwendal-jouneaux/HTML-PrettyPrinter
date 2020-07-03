@@ -10,11 +10,12 @@ public class HTMLAdaptationContext extends AdaptationContext<HTMLLanguage> {
 
 	@Override
 	public Map<String, Double> loadUserConfig() {
-		System.err.println("THE LOOP WORKS");
 		Map<String, Double> out = new HashMap<String, Double>();
 		out.put("Energy", Double.parseDouble(System.getenv("ADAPTABLE_HTML_ENERGY")) / 100.0);
+		System.err.println("\tENERGY = " + out.get("Energy"));
 		out.put("Accuracy", Double.parseDouble(System.getenv("ADAPTABLE_HTML_ACCURACY")) / 100.0);
-		return null;
+		System.err.println("\tACCURACY = " + out.get("Accuracy"));
+		return out;
 	}
 
 	@Override
@@ -23,7 +24,7 @@ public class HTMLAdaptationContext extends AdaptationContext<HTMLLanguage> {
 	}
 
 	@Override
-	public Resource[] resources() {
+	protected Resource[] createResources() {
 		return new Resource[] {};
 	}
 
