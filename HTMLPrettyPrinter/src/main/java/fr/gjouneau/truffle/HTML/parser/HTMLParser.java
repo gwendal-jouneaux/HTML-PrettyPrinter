@@ -112,8 +112,9 @@ public class HTMLParser {
 		
 		if(index < endIndex) {
 			index = Math.min(endIndex, index +tag.getSimpleName().length()+3);
+			return new HTMLNodeBlockTag(tag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
 		}
-		return new HTMLNodeBlockTag(tag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
+		return new HTMLNodeBlockTag(tag, attributes, children, startindex, endIndex);
 	}
 	
 	private HTMLNodeBlockTag parseBlock(int startindex, int endIndex, String stringTag) {
