@@ -44,7 +44,7 @@ public class HTMLNodeBlockTag extends HTMLNodeBaseTag {
 		}
 		out += ">";
 		for (HTMLNodeBase child : children) {
-			out += child.execute(frame);
+			if(child != null) out += child.execute(frame);
 		}
 		out += "</"+stringTag + ">";
 		return out;

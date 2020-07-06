@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
-
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.instrumentation.Tag;
 
@@ -70,10 +68,11 @@ public class HTMLParser {
 		if (tag == null) {
 			tag = HTMLInstrumentationTags.Unknown.class;
 			
-			if (content.contains("</"+stringTag)) {
-				return parseBlock(sourceSectionStart, endIndex, stringTag);
-			} else {
+			int endTagIndex = content.indexOf("</"+stringTag);
+			if (endTagIndex < 0 || endTagIndex > endIndex) {
 				return parseEmpty(sourceSectionStart, endIndex, stringTag);
+			} else {
+				return parseBlock(sourceSectionStart, endIndex, stringTag);
 			}
 		} else {
 			if (Arrays.asList(HTMLInstrumentationTags.VOID_ELEMENT).contains(tag)) {
@@ -93,14 +92,24 @@ public class HTMLParser {
 		}
 		int blockEnd = findEndTagIndex(tag, index, endIndex);
 		List<HTMLNodeBase> children = new ArrayList<HTMLNodeBase>();
-		while(index < endIndex) {
-			HTMLNodeBase elem = parseNext(blockEnd);
-			if(elem != null) {
-				children.add(elem);
-			} else {
-				break;
+		if (tag.equals(HTMLInstrumentationTags.SCRIPT.class) 
+				|| tag.equals(HTMLInstrumentationTags.STYLE.class)
+				|| tag.equals(HTMLInstrumentationTags.SVG.class)) {
+			String inner = content.substring(index,blockEnd);
+			HTMLNodePlainText elem = new HTMLNodePlainText(inner, index, blockEnd);
+			children.add(elem);
+			index = blockEnd;
+		} else {
+			while(index < endIndex) {
+				HTMLNodeBase elem = parseNext(blockEnd);
+				if(elem != null) {
+					children.add(elem);
+				} else {
+					break;
+				}
 			}
 		}
+		
 		if(index < endIndex) {
 			index = Math.min(endIndex, index +tag.getSimpleName().length()+3);
 		}
@@ -164,7 +173,7 @@ public class HTMLParser {
 			}
 		}while(isComment() && bypassComment());
 		return new HTMLNodePlainText(out.toString(), sourceSectionStart, index-1);
-	}	
+	}
 	
 	private HTMLNodeAttribute parseAttribute(int endIndex) {
 		while(WS.contains(content.charAt(index))) {

@@ -13,4 +13,5 @@ native/.settings/*
 native/.project
 component/.settings/*
 component/.project
+component/html-component.jar
 addComponent/.settings/*
