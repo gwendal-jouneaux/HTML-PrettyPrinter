@@ -68,11 +68,11 @@ public class HTMLParser {
 		if (tag == null) {
 			tag = HTMLInstrumentationTags.Unknown.class;
 			
-			int endTagIndex = content.indexOf("</"+stringTag);
+			int endTagIndex = content.indexOf("</"+stringTag, index);
 			if (endTagIndex < 0 || endTagIndex > endIndex) {
 				return parseEmpty(sourceSectionStart, endIndex, stringTag);
 			} else {
-				return parseBlock(sourceSectionStart, endIndex, stringTag);
+				return parseBlock(sourceSectionStart, endIndex, endTagIndex, stringTag);
 			}
 		} else {
 			if (Arrays.asList(HTMLInstrumentationTags.VOID_ELEMENT).contains(tag)) {
@@ -109,7 +109,6 @@ public class HTMLParser {
 				}
 			}
 		}
-		
 		if(index < endIndex) {
 			index = Math.min(endIndex, index +tag.getSimpleName().length()+3);
 			return new HTMLNodeBlockTag(tag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
@@ -117,14 +116,13 @@ public class HTMLParser {
 		return new HTMLNodeBlockTag(tag, attributes, children, startindex, endIndex);
 	}
 	
-	private HTMLNodeBlockTag parseBlock(int startindex, int endIndex, String stringTag) {
+	private HTMLNodeBlockTag parseBlock(int startindex, int endIndex, int blockEnd, String stringTag) {
 		int tagEnd = findIndexOf('>',index,endIndex);
 		HTMLNodeAttribute attr;
 		List<HTMLNodeAttribute> attributes = new ArrayList<HTMLNodeAttribute>();
 		while((attr = parseAttribute(tagEnd)) != null) {
 			attributes.add(attr);
 		}
-		int blockEnd = findEndTagIndex(stringTag, index, endIndex);
 		List<HTMLNodeBase> children = new ArrayList<HTMLNodeBase>();
 		while(index < endIndex) {
 			HTMLNodeBase elem = parseNext(blockEnd);
@@ -137,7 +135,7 @@ public class HTMLParser {
 		if(index < endIndex) {
 			index = Math.min(endIndex, index + stringTag.length()+3);
 		}
-		return new HTMLNodeBlockTag(stringTag, attributes, children, startindex, findIndexOf('>',blockEnd,endIndex));
+		return new HTMLNodeBlockTag(stringTag, attributes, children, startindex, content.indexOf('>',blockEnd));
 	}
 	
 	private HTMLNodeEmptyTag parseEmpty(int startindex, int endIndex, Class<? extends Tag> tag) {
